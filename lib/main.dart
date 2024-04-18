@@ -64,17 +64,40 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return  Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(
+            widget.title,
+        style: const TextStyle(
+            fontSize: 47,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+        elevation: 0, // shadow off
+        backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.settings),
+          icon: const Icon(
+                Icons.settings,
+                size: 32,
+            ),
           onPressed: (){
-
+          // TODO options
           },
         ),
     ),
 
-      body: Center(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xffbeb4ff),
+              Color(0xffb4efff),
+            ],
+          ),
+        ),
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
@@ -95,24 +118,44 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
             const Text(
               'Wybierz poziom trudności',
-              style: TextStyle(fontSize:  24),
+              style: TextStyle(fontSize:  30,
+                // shadows: [
+                //   Shadow(
+                //     color: Colors.black,
+                //     offset: Offset(0.5,0.5),
+                //   ),
+                // ], Shadows if needed
+              ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 ElevatedButton(
                   onPressed: (){
+                    // TODO if pressed switch to difficulty lvl
                     },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xffb298ff),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)
+                    ),
+                    minimumSize: const Size(120,120),
+                  ),
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Text('4x4'),
+                    child: Text('4x4',
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.black
+                    ),
+                    ),
                     ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(width: 40),
                 ElevatedButton(onPressed: ()
                     {
-                      //Add sth
+                      // TODO if pressed switch to difficulty lvl
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xffb298ff),
@@ -123,8 +166,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     child: const Padding(
                       padding: EdgeInsets.all(16.0),
-                      child: Text('8x8'),
-                    ))
+                      child: Text('8x8',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.black
+                      ),
+                    ),
+                    ),
+                ),
               ],
             ),
           ],
