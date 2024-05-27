@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game/game_board.dart';
+import 'settings_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -11,10 +12,35 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _roundTime = 60;
+  int _numberOfPlayers = 2;
+
   void _navigateToGameBoard(BuildContext context, int gridSize) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GameBoard(gridSize: gridSize)),
+      MaterialPageRoute(
+        builder: (context) => GameBoard(
+          gridSize: gridSize,
+          roundTime: _roundTime,
+          numberOfPlayers: _numberOfPlayers,
+        ),
+      ),
+    );
+  }
+
+  void _navigateToSettings(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SettingsPage(
+          onSettingsChanged: (roundTime, numberOfPlayers) {
+            setState(() {
+              _roundTime = roundTime;
+              _numberOfPlayers = numberOfPlayers;
+            });
+          },
+        ),
+      ),
     );
   }
 
@@ -46,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
             size: 32,
           ),
           onPressed: () {
-            // TODO options
+            _navigateToSettings(context);
           },
         ),
       ),

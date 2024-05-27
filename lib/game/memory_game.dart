@@ -6,7 +6,7 @@ class MemoryGame {
   final List<MemoryCard> cards = [];
   MemoryCard? firstSelectedCard;
   MemoryCard? secondSelectedCard;
-  bool isProcessing = false;
+  bool _isWaiting = false;
 
   MemoryGame({required this.gridSize}) {
     _initializeCards();
@@ -32,7 +32,7 @@ class MemoryGame {
   }
 
   Future<void> selectCard(MemoryCard card) async {
-    if (isProcessing || card.isFaceUp || card.isMatched) {
+    if (card.isFaceUp || card.isMatched || _isWaiting) {
       return;
     }
 
@@ -42,20 +42,20 @@ class MemoryGame {
       firstSelectedCard = card;
     } else if (secondSelectedCard == null) {
       secondSelectedCard = card;
-      isProcessing = true;
 
-      if (firstSelectedCard!.content == secondSelectedCard!.content) {
+      if (firstSelectedCard!.id == secondSelectedCard!.id) {
         firstSelectedCard!.isMatched = true;
         secondSelectedCard!.isMatched = true;
         _resetSelectedCards();
       } else {
-        await Future.delayed(const Duration(seconds: 3));
-        firstSelectedCard!.isFaceUp = false;
-        secondSelectedCard!.isFaceUp = false;
-        _resetSelectedCards();
+        _isWaiting = true;
+        await Future.delayed(const Duration(milliseconds: 400), () {
+          firstSelectedCard!.isFaceUp = false;
+          secondSelectedCard!.isFaceUp = false;
+          _resetSelectedCards();
+          _isWaiting = false;
+        });
       }
-
-      isProcessing = false;
     }
   }
 
