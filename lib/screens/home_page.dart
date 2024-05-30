@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../game/game_board.dart';
+import '../screens/options_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -11,11 +12,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _numberOfPlayers = 1;
+  int _roundTime = 60;
+
   void _navigateToGameBoard(BuildContext context, int gridSize) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => GameBoard(gridSize: gridSize)),
+      MaterialPageRoute(
+        builder: (context) => GameBoard(
+          gridSize: gridSize,
+          numberOfPlayers: _numberOfPlayers,
+          roundTime: _roundTime,
+        ),
+      ),
     );
+  }
+
+  Future<void> _navigateToOptions(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => OptionsScreen()),
+    );
+
+    if (result != null && result is Map<String, int>) {
+      setState(() {
+        _numberOfPlayers = result['players']!;
+        _roundTime = result['time']!;
+      });
+    }
   }
 
   @override
@@ -46,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
             size: 32,
           ),
           onPressed: () {
-            // TODO options
+            _navigateToOptions(context);
           },
         ),
       ),

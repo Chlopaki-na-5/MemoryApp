@@ -7,6 +7,8 @@ class MemoryGame {
   MemoryCard? firstSelectedCard;
   MemoryCard? secondSelectedCard;
   bool isProcessing = false;
+  bool isPairFound = false;
+  bool isGameOver = false;
 
   MemoryGame({required this.gridSize}) {
     _initializeCards();
@@ -43,10 +45,12 @@ class MemoryGame {
     } else if (secondSelectedCard == null) {
       secondSelectedCard = card;
       isProcessing = true;
+      isPairFound = false;
 
       if (firstSelectedCard!.content == secondSelectedCard!.content) {
         firstSelectedCard!.isMatched = true;
         secondSelectedCard!.isMatched = true;
+        isPairFound = true;
         _resetSelectedCards();
       } else {
         await Future.delayed(const Duration(seconds: 3));
@@ -57,10 +61,26 @@ class MemoryGame {
 
       isProcessing = false;
     }
+
+    isGameOver = _checkIfGameOver();
+  }
+
+  bool _checkIfGameOver() {
+    return cards.every((card) => card.isMatched);
   }
 
   void _resetSelectedCards() {
     firstSelectedCard = null;
     secondSelectedCard = null;
+  }
+
+  void resetGame() {
+    cards.clear();
+    _initializeCards();
+    firstSelectedCard = null;
+    secondSelectedCard = null;
+    isProcessing = false;
+    isPairFound = false;
+    isGameOver = false;
   }
 }
