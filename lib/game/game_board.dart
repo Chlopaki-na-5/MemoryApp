@@ -24,7 +24,8 @@ class _GameBoardState extends State<GameBoard> {
   late Timer _timer;
   late int _timeRemaining;
   int _currentPlayer = 0;
-  List<int> _scores = [];
+  List<int> _pairScores = [];
+  List<int> _timeBonuses = [];
   bool _isGameFinished = false;
 
   @override
@@ -37,7 +38,8 @@ class _GameBoardState extends State<GameBoard> {
     _memoryGame = MemoryGame(gridSize: widget.gridSize);
     _timeRemaining = widget.roundTime;
     _currentPlayer = 0;
-    _scores = List.generate(widget.numberOfPlayers, (_) => 0);
+    _pairScores = List.generate(widget.numberOfPlayers, (_) => 0);
+    _timeBonuses = List.generate(widget.numberOfPlayers, (_) => 0);
     _startTimer();
   }
 
@@ -61,65 +63,70 @@ class _GameBoardState extends State<GameBoard> {
       setState(() {});
 
       if (_memoryGame.isPairFound) {
-        _scores[_currentPlayer] += 10;
+        _pairScores[_currentPlayer] += 10;
       }
 
       if (_memoryGame.isGameOver) {
         _timer.cancel();
         _addTimeBonus();
-        _endGame();
+        _endRound();
       }
     }
   }
 
   void _addTimeBonus() {
-    if (_memoryGame.isGameOver && _timeRemaining > 0) {
-      _scores[_currentPlayer] += _timeRemaining;
+    if (_timeRemaining > 0) {
+      _timeBonuses[_currentPlayer] = _timeRemaining;
     }
   }
 
   void _endRound() {
     setState(() {
-      _currentPlayer = (_currentPlayer + 1) % widget.numberOfPlayers;
-      if (_currentPlayer == 0) {
-        _isGameFinished = true;
-      } else {
+      _addTimeBonus();
+      _currentPlayer++;
+      if (_currentPlayer < widget.numberOfPlayers) {
         _memoryGame.resetGame();
         _timeRemaining = widget.roundTime;
         _startTimer();
+      } else {
+        _isGameFinished = true;
       }
     });
   }
 
-  void _endGame() {
-    setState(() {
-      _isGameFinished = true;
-    });
-  }
-
   Widget _buildResultsTable() {
+    List<Map<String, dynamic>> results = List.generate(widget.numberOfPlayers, (index) {
+      int pairScore = _pairScores[index];
+      int timeBonus = _timeBonuses[index];
+      int totalScore = pairScore + timeBonus;
+      return {
+        'player': 'Gracz ${index + 1}',
+        'pairScore': pairScore,
+        'timeBonus': timeBonus,
+        'totalScore': totalScore,
+      };
+    });
+
+    // Sort results by total score in descending order
+    results.sort((a, b) => b['totalScore'].compareTo(a['totalScore']));
+
     return DataTable(
-      columns: [
+      columns: const [
         DataColumn(label: Text('Gracz')),
         DataColumn(label: Text('Punkty za pary')),
         DataColumn(label: Text('Punkty za czas')),
         DataColumn(label: Text('Suma punktów')),
       ],
-      rows: List<DataRow>.generate(
-        widget.numberOfPlayers,
-            (index) {
-          int timeBonus = 0;
-          int totalScore = _scores[index] + timeBonus;
-          return DataRow(
-            cells: [
-              DataCell(Text('Gracz ${index + 1}')),
-              DataCell(Text((_scores[index] - _timeRemaining).toString())), // Punkty za pary
-              DataCell(Text(timeBonus.toString())), // Punkty za czas
-              DataCell(Text(totalScore.toString())), // Suma punktów
-            ],
-          );
-        },
-      ),
+      rows: results.map((result) {
+        return DataRow(
+          cells: [
+            DataCell(Text(result['player'])),
+            DataCell(Text(result['pairScore'].toString())), // Punkty za pary
+            DataCell(Text(result['timeBonus'].toString())), // Punkty za czas
+            DataCell(Text(result['totalScore'].toString())), // Suma punktów
+          ],
+        );
+      }).toList(),
     );
   }
 
@@ -128,32 +135,8 @@ class _GameBoardState extends State<GameBoard> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          '${widget.gridSize} x ${widget.gridSize} Game Board',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                offset: Offset(2.0, 2.0),
-                blurRadius: 3.0,
-                color: Color.fromARGB(255, 0, 0, 0),
-              ),
-            ],
-          ),
-        ),
-        centerTitle: true,
-        elevation: 0,
+        title: Text('${widget.gridSize} x ${widget.gridSize} Game Board'),
         backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            size: 32,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -171,12 +154,12 @@ class _GameBoardState extends State<GameBoard> {
             : Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(60.0),
-              child: Text('Czas: $_timeRemaining sek', style: TextStyle(fontSize: 24)),
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Czas: $_timeRemaining sek', style: const TextStyle(fontSize: 24)),
             ),
             Padding(
-              padding: const EdgeInsets.all(1.0),
-              child: Text('Gracz: ${_currentPlayer + 1}', style: TextStyle(fontSize: 24)),
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Gracz: ${_currentPlayer + 1}', style: const TextStyle(fontSize: 24)),
             ),
             Expanded(
               child: LayoutBuilder(
