@@ -117,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(width: 40),
                 ElevatedButton(
                   onPressed: () {
-                    _navigateToGameBoard(context, 8);
+                    _navigateToGameBoard(context, 6);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xffb298ff),
@@ -128,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Padding(
                     padding: EdgeInsets.all(16.0),
                     child: Text(
-                      '8x8',
+                      '6x6',
                       style: TextStyle(fontSize: 24, color: Colors.black),
                     ),
                   ),

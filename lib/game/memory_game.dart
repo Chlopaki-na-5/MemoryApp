@@ -24,9 +24,9 @@ class MemoryGame {
     List<MemoryCard> tempCards = [];
     for (int i = 0; i < numberOfPairs; i++) {
       String id = 'pair_$i';
-      String content = 'content_$i';
-      tempCards.add(MemoryCard(id: id, content: content));
-      tempCards.add(MemoryCard(id: id, content: content));
+      String imagePath = 'lib/assets/image_$i.png';
+      tempCards.add(MemoryCard(id: id, imageAssetPath: imagePath));
+      tempCards.add(MemoryCard(id: id, imageAssetPath: imagePath));
     }
 
     tempCards.shuffle();
@@ -47,7 +47,7 @@ class MemoryGame {
       isProcessing = true;
       isPairFound = false;
 
-      if (firstSelectedCard!.content == secondSelectedCard!.content) {
+      if (firstSelectedCard!.imageAssetPath == secondSelectedCard!.imageAssetPath) {
         firstSelectedCard!.isMatched = true;
         secondSelectedCard!.isMatched = true;
         isPairFound = true;

@@ -95,7 +95,9 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   Widget _buildResultsTable() {
+
     List<Map<String, dynamic>> results = List.generate(widget.numberOfPlayers, (index) {
+
       int pairScore = _pairScores[index];
       int timeBonus = _timeBonuses[index];
       int totalScore = pairScore + timeBonus;
@@ -110,33 +112,35 @@ class _GameBoardState extends State<GameBoard> {
     // Sort results by total score in descending order
     results.sort((a, b) => b['totalScore'].compareTo(a['totalScore']));
 
-    return DataTable(
-      columns: const [
-        DataColumn(label: Text('Gracz')),
-        DataColumn(label: Text('Punkty za pary')),
-        DataColumn(label: Text('Punkty za czas')),
-        DataColumn(label: Text('Suma punktów')),
-      ],
-      rows: results.map((result) {
-        return DataRow(
-          cells: [
-            DataCell(Text(result['player'])),
-            DataCell(Text(result['pairScore'].toString())), // Punkty za pary
-            DataCell(Text(result['timeBonus'].toString())), // Punkty za czas
-            DataCell(Text(result['totalScore'].toString())), // Suma punktów
-          ],
-        );
-      }).toList(),
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columns: const [
+          DataColumn(label: Text('Gracz')),
+          DataColumn(label: Text('Punkty za pary')),
+          DataColumn(label: Text('Punkty za czas')),
+          DataColumn(label: Text('Suma punktów')),
+        ],
+        rows: results.map((result) {
+          return DataRow(
+            cells: [
+              DataCell(Text(result['player'])),
+              DataCell(Text(result['pairScore'].toString())), // Punkty za pary
+              DataCell(Text(result['timeBonus'].toString())), // Punkty za czas
+              DataCell(Text(result['totalScore'].toString())), // Suma punktów
+            ],
+          );
+        }).toList(),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar:AppBar(
         title: Text('${widget.gridSize} x ${widget.gridSize} Game Board'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: Color(0xffbeb4ff),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -161,12 +165,14 @@ class _GameBoardState extends State<GameBoard> {
               padding: const EdgeInsets.all(16.0),
               child: Text('Gracz: ${_currentPlayer + 1}', style: const TextStyle(fontSize: 24)),
             ),
+
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   double cardSize = (constraints.maxWidth - (widget.gridSize - 1) * 10) / widget.gridSize;
 
                   return GridView.builder(
+
                     padding: const EdgeInsets.all(16.0),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: widget.gridSize,
@@ -176,20 +182,30 @@ class _GameBoardState extends State<GameBoard> {
                     itemCount: widget.gridSize * widget.gridSize,
                     itemBuilder: (context, index) {
                       MemoryCard card = _memoryGame.cards[index];
-
                       return GestureDetector(
                         onTap: () => _onCardTapped(card),
                         child: Container(
                           width: cardSize,
                           height: cardSize,
                           decoration: BoxDecoration(
-                            color: card.isFaceUp || card.isMatched ? Colors.blueAccent : Colors.grey,
-                            borderRadius: BorderRadius.circular(10),
+                            color: card.isFaceUp ? Colors.white : Colors.blue,
+                            borderRadius: BorderRadius.circular(8.0),
+                            image: card.isFaceUp
+                                ? DecorationImage(
+                              image: AssetImage(card.imageAssetPath),
+                              fit: BoxFit.cover,
+                            )
+                                : null,
                           ),
-                          child: Center(
+                          child: card.isFaceUp
+                              ? null
+                              : Center(
                             child: Text(
-                              card.isFaceUp || card.isMatched ? card.content : '',
-                              style: const TextStyle(fontSize: 24, color: Colors.white),
+                              '?',
+                              style: TextStyle(
+                                fontSize: 32,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
