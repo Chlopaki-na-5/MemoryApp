@@ -56,6 +56,12 @@ class _GameBoardState extends State<GameBoard> {
     });
   }
 
+  @override
+  void dispose() {
+    _timer.cancel();
+    super.dispose();
+  }
+
   void _onCardTapped(MemoryCard card) async {
     if (_timeRemaining > 0) {
       setState(() {});
@@ -95,9 +101,7 @@ class _GameBoardState extends State<GameBoard> {
   }
 
   Widget _buildResultsTable() {
-
     List<Map<String, dynamic>> results = List.generate(widget.numberOfPlayers, (index) {
-
       int pairScore = _pairScores[index];
       int timeBonus = _timeBonuses[index];
       int totalScore = pairScore + timeBonus;
@@ -109,7 +113,6 @@ class _GameBoardState extends State<GameBoard> {
       };
     });
 
-    // Sort results by total score in descending order
     results.sort((a, b) => b['totalScore'].compareTo(a['totalScore']));
 
     return SingleChildScrollView(
@@ -125,9 +128,9 @@ class _GameBoardState extends State<GameBoard> {
           return DataRow(
             cells: [
               DataCell(Text(result['player'])),
-              DataCell(Text(result['pairScore'].toString())), // Punkty za pary
-              DataCell(Text(result['timeBonus'].toString())), // Punkty za czas
-              DataCell(Text(result['totalScore'].toString())), // Suma punktów
+              DataCell(Text(result['pairScore'].toString())),
+              DataCell(Text(result['timeBonus'].toString())),
+              DataCell(Text(result['totalScore'].toString())),
             ],
           );
         }).toList(),
@@ -138,7 +141,7 @@ class _GameBoardState extends State<GameBoard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         title: Text('${widget.gridSize} x ${widget.gridSize} Game Board'),
         backgroundColor: Color(0xffbeb4ff),
       ),
@@ -165,14 +168,11 @@ class _GameBoardState extends State<GameBoard> {
               padding: const EdgeInsets.all(16.0),
               child: Text('Gracz: ${_currentPlayer + 1}', style: const TextStyle(fontSize: 24)),
             ),
-
             Expanded(
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   double cardSize = (constraints.maxWidth - (widget.gridSize - 1) * 10) / widget.gridSize;
-
                   return GridView.builder(
-
                     padding: const EdgeInsets.all(16.0),
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: widget.gridSize,

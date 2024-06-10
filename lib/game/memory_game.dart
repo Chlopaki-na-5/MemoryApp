@@ -53,7 +53,7 @@ class MemoryGame {
         isPairFound = true;
         _resetSelectedCards();
       } else {
-        await Future.delayed(const Duration(seconds: 3));
+        await Future.delayed(const Duration(seconds: 1));
         firstSelectedCard!.isFaceUp = false;
         secondSelectedCard!.isFaceUp = false;
         _resetSelectedCards();
